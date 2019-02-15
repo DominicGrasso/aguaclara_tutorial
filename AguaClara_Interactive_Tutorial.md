@@ -31,40 +31,63 @@ These questions are meant to test what you've learned from the Python Basics tut
 
 1. Write a conditional statement with 3 conditions: when x is 10, when x is 1, and when x is anything other than 1 or 10. For each condition, have your code print what the value is or isn't.
 
-<!--- Fill you answer here. --->
+```Python
+def Value_Determination(x):
+  if x == 10:
+    print('x is equal to 10')
+  if x == 1:
+    print('x is equal to 10')
+  if x != 1 and x != 10:
+    print('x does not equal 1 or 10')
 
-
-
+Value_Determination(8)
+```
 
 2. Write a `for` loop that takes a variable with an initial value of 0, and adds the current index to the previous value of that variable (i.e. you variable should grow in size every iteration). Perform the iteration 20 times, and have the final value be printed at the end.
 
-<!--- Fill you answer here. --->
+```Python
+def Repetition(iterations):
+  x = 0
+  for i in range(iterations):
+    x += i
+  print(str(x))
 
-
-
-
-
-
-
-
+Repetition(20)
+```
 
 3. Using the NumPy package and `unit_registry`, calculate the value of sin(4) meters, and use the sigfig function from the unit unit_registry module in aide_design to get your answer to 2 sig-figs. *(Hint: You will need to import these packages. Remember how to do that?)*
 
-<!--- Fill you answer here. --->
+```Python
+from aguaclara.play import*
+import math as m
 
-
+u.default_format = '.2f'
+myValue = m.sin(4)
+print(myValue*u.m)
+```
 
 4. Create a `list` of length 5, and verify the length of your list. Once you've done that, turn your `list` into an `array` and apply units of meters to it. After that, create a 5x5 `array`, extract the middle row and middle column. Verify the size of your 2D `array` and apply units of liters to it.
 
-<!--- Fill you answer here. --->
+```python
+from aguaclara.play import*
+myList = [0, 1, 2, 3, 4]
+first_array = np.array(myList)
+print(len(myList))
+
+list = []
+for i in range(5):
+  list.append(first_array)
+
+myArray = np.array(list)
+myArrayUnits = myArray * u.m
+
+MiddleColumn = myArrayUnits[:,1]
+MiddleRow = myArrayUnits[1,:]
+
+myNewArray = myArrayUnits * u.L
 
 
-
-
-
-
-
-
+```
 
 5.  One of the most famous equations for a particle diffusing through a liquid at low Reynolds Number is the Stokes-Einstein Equation where k<sub>B</sub> is the Boltzmann constant, T is the temperature in Kelvin, eta is the dynamic viscosity in kg/(m*s), and r is the particle radius. Write a function that takes a temperature in Kelvin, a particle radius in meters, and a viscosity of water to calculate the diffusion coefficient D.
 
@@ -79,13 +102,47 @@ from scipy.constants import Boltzmann as kB_sc # I've imported the unitless valu
 
 kB = kB_sc * u.joule / u.kelvin # I've given kB units for you in J/K; you can use the kB variable to give you Boltzmann's constant with units
 
-# Write your code here
+import math as m
+
+def Boltzmann(T, eta, r):
+  """This function takes in values of temperature, viscosity, and radius in order to compute the diffusion coefficient"""
+  D = 0  
+  T *= u.kelvin
+  r *= u.m
+  eta *= u.kg / (u.m * u.s)
+  D += (kB*T) / (6 * m.pi * eta * r)
+  print(D)
+
+Boltzmann (140, 50, 0.25)
 
 ```
 
 6. You have a pipe with a radius of 0.2 m with water flowing in it at 2 m<sup>3</sup>/s. You want to see how the Reynolds Number changes as viscosity changes due to a change in temperature from 0 to 200<sup>o</sup>C. Create a plot of Reynolds Number against Temperature in Kelvin to show a relationship. Make sure your plot has a title, labeled axes, and axes grid. You can use functions from `physchem` like `pc.re_pipe` and `pc.viscosity_kinematic`. *(Hint: Make an array of temperatures to input into the `pc.viscosity_kinematic` function)*. Make sure to save you plot to your images folder in your personal repository, and display it below using `plt.show()` and a relative file path to the image.
 
-<!--- Fill you answer here. --->
+```python
+from aguaclara.play import*
+
+xArray = u.Quantity(np.arange(0, 200, 10))
+
+@u.wraps(None, [u.m / u.s, u.m, u.m **2 / u.s], False)
+def re_flat_plate(velocity, dist, nu):
+  """This function calculates the Reynolds Number for flow past a plate using fluid velocity, plate length, and kinematic viscosity."""
+  return (velocity * dist/nu)
+
+plt.plot(xArray, 5* xArray / np.sqrt(re_flat_plate(1, xArray, pc.viscosity_kinematic(293 * u.kelvin))), '-', label = 'Temperature Range')
+plt.xlabel('Temperature (Kelvin)')
+plt.ylabel('Reynolds Number')
+plt.title('Reynolds Number vs. Temperature')
+plt.minorticks_on()
+plt.grid(which = 'major')
+plt.grid(which = 'minor')
+plt.legend(loc = 'lower right', ncol = 1)
+plt.tight_layout()
+plt.savefig('./Images/Reynolds_Number_Plot.png')
+plt.show()
+
+#I was unable to resolve my issues with making the graph
+```
 
 
 # GitHub Basics
